@@ -123,7 +123,7 @@ io.on('connection', function(socket){
     // second user to a single room  
     } else if (Object.keys(roomLen).length === 1 || Object.keys(roomLen).length === 3 && users.socketList.indexOf(userId) === -1){
        // "highScore" is used later to evaluate whether both users in a room have submitted code
-      io.sockets.adapter.rooms[room]['highScore'] = 0;
+      io.sockets.adapter.rooms[room]['highScore'] = undefined;
       io.sockets.adapter.rooms[room]['firstPlayer'] = null;
       addUser();
       setTimeout(function(){
@@ -156,8 +156,8 @@ io.on('connection', function(socket){
   // ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~
 
   socket.on('sendCode', function(code){
-
-   var errorsInCode = false;
+   
+    var errorsInCode = false;
     
     try {
       // get the function evaluated
@@ -224,7 +224,7 @@ io.on('connection', function(socket){
     date = (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear(); 
       console.log(date);
     // if first run, this should be set to zero
-    if(io.sockets.adapter.rooms[currentRoom]['highScore'] === 0){
+    if(io.sockets.adapter.rooms[currentRoom]['highScore'] === undefined){
       // thus, set the room's highScore to the score of the first submitter
       io.sockets.adapter.rooms[currentRoom]['highScore'] = currentScore;
       // set the room's first submitter to "firstPlayer"
