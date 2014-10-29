@@ -22,10 +22,10 @@ angular.module('app')
      //here are our variables for start theme and prompt
      var theme = "twilight"; 
      var editor = ace.edit("editor");
-     editor.setHighlightGutterLine(true);
      $scope.prompt = '//Your prompt will appear when your opponent joins the room \n //Ask a friend to join this room to duel';
     
     //this adds the editor to the view with default settings
+     editor.setHighlightGutterLine(true);
      editor.setTheme("ace/theme/"+ theme);
      editor.getSession().setMode("ace/mode/javascript");
      editor.setValue($scope.prompt);
