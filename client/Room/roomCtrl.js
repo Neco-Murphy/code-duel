@@ -44,10 +44,15 @@ angular.module('app')
        $scope.problemName = problem.problemName;
        $scope.noOpponent=false;
        editor.setValue($scope.prompt);
-       
-       //add opponents to room
        $scope.allPlayers = problem.opponents;
-       
+
+       //set opponents
+        for(var i = 0; i < problem.opponents.length; i++){
+          if($scope.playername === problem.opponents[i]){
+            problem.opponents.splice(i, 1);
+          }
+        }
+        $scope.opponents = problem.opponents;
 
        //delay clock 1 second to help sync up clocks
        if($scope.clock.notcalled){
