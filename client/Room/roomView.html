@@ -13,11 +13,16 @@
 
   .opponents-ul {
     list-style: none;
+    padding-left: 0;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.1;
   }
 
-  .opponents-ul > li{
+  .opponents-ul > li {
     display: inline;
-    margin: 10px;
+    margin-left: 0px;
+    margin-right: 5px;
   }
 
   /* we can/should add this to the main style sheet when it is created*/
@@ -39,9 +44,10 @@
       <div class="clock"></div>
       <div>
         <h4>Room: {{roomname}}</h4>
-        <h4>Opponents: 
-          <ul class="opponents-ul"><li ng-repeat="opponent in opponents">{{ opponent }}</li></ul>
-        </h4>
+        <ul class="opponents-ul">
+          <li>Opponents: </li>
+          <li ng-repeat="opponent in opponents">{{ opponent }}</li>
+        </ul>
       </div>
 
       <div>
