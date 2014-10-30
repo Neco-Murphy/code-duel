@@ -24,6 +24,7 @@ angular.module('app')
      $scope.finishBeforeOpponent = false;
      $scope.victory=false;
      $scope.defeat=false;
+     $scope.Gameover = false;
 
      //here are our variables for start theme and prompt
      var theme = "twilight";
@@ -79,12 +80,12 @@ angular.module('app')
      });
 
     socket.on('destroyPrompt', function(){
-       $scope.prompt = '//Your prompt will appear momentarily';
-       editor.setValue($scope.prompt);
-       $scope.noOpponent=true;
-       //2($scope.prompt);
-       $scope.stopTimer();
-
+      if(!$scope.Gameover){
+        $scope.prompt = '//Your prompt will appear momentarily';
+        editor.setValue($scope.prompt);
+        $scope.noOpponent=true;
+        $scope.stopTimer();
+      }
      });
 
     socket.on('sendScore', function(codeScore){
@@ -99,6 +100,7 @@ angular.module('app')
     socket.on('isWinner', function(isWinner){
       console.log("is Winner??", JSON.stringify(isWinner.isWinner));
       editorOpp.setValue(isWinner.opponentCode);
+      $scope.Gameover = true;
       $(".oponentCodeButton").prop('disabled', false);
       setTimeout(function(){
         if(isWinner.isWinner){
