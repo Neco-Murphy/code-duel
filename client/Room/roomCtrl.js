@@ -7,7 +7,13 @@ angular.module('app')
       countdown: true,
       callbacks: {
         stop: function(){
-          $scope.timesup = true;
+          var currentTime = clock.getTime();
+          if(currentTime.time === 0){
+            $scope.timesup = true;
+            //disable submit and reset button
+            $('.submitButton').prop('disabled', true);
+            $('.resetButton').prop('disabled', true);
+          }
         }
       }
     });
@@ -141,6 +147,7 @@ angular.module('app')
         id: $scope.playerId,
         players: $scope.allPlayers
       });
+      clock.stop();
       $scope.stopTimer();
       $scope.sent = true;
     };
