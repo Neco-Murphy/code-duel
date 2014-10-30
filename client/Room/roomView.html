@@ -7,7 +7,7 @@
     -o-perspective: 1000;
     perspective: 1000;
   }
-  
+
   .flipper.flip {
     -webkit-transform: rotateY(180deg);
     -moz-transform: rotateY(180deg);
@@ -21,7 +21,7 @@
 
     -moz-transition: 1.0s;
     -moz-transform-style: preserve-3d;
-    
+
     -o-transition: 1.0s;
     -o-transform-style: preserve-3d;
 
@@ -106,8 +106,8 @@
       </div>
 
       <div>
-        <button ng-click="reset()" class="btn btn-md btn-danger" ng-disabled="sent">Reset</button>
-        <button ng-click="submit()" class="btn btn-md btn-danger" ng-disabled="sent">Submit</button>
+        <button ng-click="reset()" class="btn btn-md btn-danger resetButton" ng-disabled="sent">Reset</button>
+        <button ng-click="submit()" class="btn btn-md btn-danger submitButton" ng-disabled="sent">Submit</button>
         <button ng-click="flip()" class="btn btn-md btn-danger oponentCodeButton">Oponent's Code</button>
       </div>
       <br />
@@ -118,7 +118,7 @@
         Your score is {{score}}.<br />Waiting on your opponent to finish...
       </div>
       <div class="well" ng-show="timesup" >
-        Times up! You lose! 
+        Times up! You lose!
       </div>
   </div>
 </div>
