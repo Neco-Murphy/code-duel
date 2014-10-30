@@ -49,7 +49,7 @@ angular.module('app')
      });
 
      //disable opponent code button as default
-     // $('.oponentCodeButton').prop('disabled', true);
+     $('.oponentCodeButton').prop('disabled', true);
 
      socket.on('displayPrompt', function(problem){
        console.log('received prompt: ' + JSON.stringify(problem));
@@ -100,7 +100,7 @@ angular.module('app')
 
     socket.on('isWinner', function(isWinner){
       console.log("is Winner??", JSON.stringify(isWinner.isWinner));
-      editor.setValue(isWinner.opponentCode);
+      editorOpp.setValue(isWinner.opponentCode);
       $(".oponentCodeButton").prop('disabled', false);
       setTimeout(function(){
         if(isWinner.isWinner){
