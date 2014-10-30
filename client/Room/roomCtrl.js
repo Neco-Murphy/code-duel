@@ -1,7 +1,7 @@
 angular.module('app')
   .controller('roomCtrl', function($scope, $log, $timeout, socket) {
     $scope.sent = false;
-    var clock = $('.clock').FlipClock(600, {
+    var clock = $('.clock').FlipClock(10, {
       clockFace: 'MinuteCounter',
       autoStart: false,
       countdown: true,
@@ -80,10 +80,9 @@ angular.module('app')
 
     socket.on('destroyPrompt', function(){
        $scope.prompt = '//Your prompt will appear momentarily';
-      editor.setValue($scope.prompt);
+       editor.setValue($scope.prompt);
        $scope.noOpponent=true;
        //2($scope.prompt);
-       clock.stop();
        $scope.stopTimer();
 
      });
@@ -92,7 +91,6 @@ angular.module('app')
       console.log(codeScore, "CODE SCORE");
       //var codeResult = codeScore.result;
       $scope.score = codeScore;
-      clock.stop()
       $scope.finishBeforeOpponent=true;
       // editor.setValue('// Your score is: ' + $scope.score + '\n // Now waiting for your opponent to finish');
       //editor.setValue('// Your code resulted in: ' + codeResult + ' ||  Your score is: ' + $scope.score);
@@ -108,8 +106,8 @@ angular.module('app')
           $scope.message = "WINNER";
           // alert('wiiinnnnner');
           $('.well').html('YOU HAVE WON!'
-            + '<br> Your score: ' + $scope.score 
-            + '<br>Your opponent\'s score: ' + isWinner.opponentScore 
+            + '<br> Your score: ' + $scope.score
+            + '<br>Your opponent\'s score: ' + isWinner.opponentScore
             + ''
             + '<br /> <a href="http://codeduel.azurewebsites.net">Go Home</a>');
 
@@ -117,8 +115,8 @@ angular.module('app')
           $scope.opponentScore = isWinner.opponentScore;
           $scope.message = "LOSER";
           $('.well').html('YOU HAVE LOST!'
-            + '<br> Your score: ' + $scope.score 
-            + '<br>Your opponent\'s score: ' + isWinner.opponentScore  
+            + '<br> Your score: ' + $scope.score
+            + '<br>Your opponent\'s score: ' + isWinner.opponentScore
             + ''
             + '<br /> <a href="http://codeduel.azurewebsites.net">Go Home</a>');
         }
@@ -181,4 +179,3 @@ angular.module('app')
     };
 
   });
-  
