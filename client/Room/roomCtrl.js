@@ -1,7 +1,7 @@
 angular.module('app')
   .controller('roomCtrl', function($scope, $log, $timeout, socket) {
     $scope.sent = false;
-    var clock = $('.clock').FlipClock(10, {
+    var clock = $('.clock').FlipClock(600, {
       clockFace: 'MinuteCounter',
       autoStart: false,
       countdown: true,
@@ -13,7 +13,7 @@ angular.module('app')
             //disable submit and reset button
             $('.submitButton').prop('disabled', true);
             $('.resetButton').prop('disabled', true);
-          } 
+          }
         }
       }
     });
