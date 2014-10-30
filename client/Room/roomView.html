@@ -1,7 +1,58 @@
 
 <style type="text/css" media="screen">
 
-  #editor {
+  .flip-container {
+    -webkit-perspective: 1000;
+    -moz-perspective: 1000;
+    -o-perspective: 1000;
+    perspective: 1000;
+  }
+  
+  .flipper.flip {
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+  }
+
+  .flipper {
+    -webkit-transition: 1.0s;
+    -webkit-transform-style: preserve-3d;
+
+    -moz-transition: 1.0s;
+    -moz-transform-style: preserve-3d;
+    
+    -o-transition: 1.0s;
+    -o-transform-style: preserve-3d;
+
+    transition: 1.0s;
+    transform-style: preserve-3d;
+    position: relative;
+  }
+
+  .front, .back {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .front {
+    z-index: 2;
+  }
+
+  .back {
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+  }
+
+  #editor, #editorOpp {
     margin-top: 10px;
     padding: 0px;
     position: absolute;
@@ -36,7 +87,11 @@
         <option value="solarized_light">solarized light</option>
         I can add a lot more themes here if we want to keep this feature
       </select>-->
-        <div id="editor">
+        <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
+          <div class="flipper">
+            <div class="front" id="editor"></div>
+            <div class ="back" id="editorOpp"></div>
+          </div>
         </div>
       </p>
     </div>
@@ -53,6 +108,7 @@
       <div>
         <button ng-click="reset()" class="btn btn-md btn-danger" ng-disabled="sent">Reset</button>
         <button ng-click="submit()" class="btn btn-md btn-danger" ng-disabled="sent">Submit</button>
+        <button ng-click="flip()" class="btn btn-md btn-danger oponentCodeButton">Oponent's Code</button>
       </div>
       <br />
       <div class="well" ng-show="noOpponent">

@@ -28,14 +28,18 @@ angular.module('app')
      //here are our variables for start theme and prompt
      var theme = "twilight";
      var editor = ace.edit("editor");
+     var editorOpp = ace.edit("editorOpp");
      $scope.prompt = '//Your prompt will appear when your opponent joins the room \n //Ask a friend to join this room to duel';
 
     //this adds the editor to the view with default settings
-     editor.setHighlightGutterLine(true);
-     editor.setTheme("ace/theme/"+ theme);
-     editor.getSession().setMode("ace/mode/javascript");
-     editor.setValue($scope.prompt);
-
+    var setEditorDefault = function(editor, content, theme){
+      editor.setHighlightGutterLine(true);
+      editor.setTheme("ace/theme/"+ theme);
+      editor.getSession().setMode("ace/mode/javascript");
+      editor.setValue(content);
+    };
+    setEditorDefault(editor, $scope.prompt, theme);
+    setEditorDefault(editorOpp, '//testing', theme);
 
      socket.on('joinedRoom', function(roominfo){
        console.log(roominfo.name + ' has been joined, BABIES');
@@ -43,6 +47,9 @@ angular.module('app')
        $scope.playername = roominfo.player;
        $scope.playerId = roominfo.id;
      });
+
+     //disable opponent code button as default
+     // $('.oponentCodeButton').prop('disabled', true);
 
      socket.on('displayPrompt', function(problem){
        console.log('received prompt: ' + JSON.stringify(problem));
@@ -93,18 +100,27 @@ angular.module('app')
 
     socket.on('isWinner', function(isWinner){
       console.log("is Winner??", JSON.stringify(isWinner.isWinner));
+      editor.setValue(isWinner.opponentCode);
+      $(".oponentCodeButton").prop('disabled', false);
       setTimeout(function(){
         if(isWinner.isWinner){
           $scope.opponentScore = isWinner.opponentScore;
           $scope.message = "WINNER";
           // alert('wiiinnnnner');
-          $('.well').html('YOU HAVE WON! <br> Your score: ' + $scope.score + '<br>Your opponent\'s score: ' + isWinner.opponentScore + '<br /> <a href="http://codeduel.azurewebsites.net">Go Home</a>');
+          $('.well').html('YOU HAVE WON!'
+            + '<br> Your score: ' + $scope.score 
+            + '<br>Your opponent\'s score: ' + isWinner.opponentScore 
+            + ''
+            + '<br /> <a href="http://codeduel.azurewebsites.net">Go Home</a>');
 
         } else {
           $scope.opponentScore = isWinner.opponentScore;
           $scope.message = "LOSER";
-          $('.well').html('YOU HAVE LOST! <br> Your score: ' + $scope.score + '<br>Your opponent\'s score: ' + isWinner.opponentScore  + '<br /> <a href="http://codeduel.azurewebsites.net">Go Home</a>');
-          // editor.setValue('// YOU HAVE LOST! Your score is ' + $scope.score + '<br>// Your oppenents score was ' + isWinner.opponentScore);
+          $('.well').html('YOU HAVE LOST!'
+            + '<br> Your score: ' + $scope.score 
+            + '<br>Your opponent\'s score: ' + isWinner.opponentScore  
+            + ''
+            + '<br /> <a href="http://codeduel.azurewebsites.net">Go Home</a>');
         }
       }, 1000);
      });
@@ -127,6 +143,15 @@ angular.module('app')
       });
       $scope.stopTimer();
       $scope.sent = true;
+    };
+
+    $scope.flip = function(){
+      if($('.flipper').hasClass('flip')){
+        $('.oponentCodeButton').text('Opponent\'s Code');
+      }else{
+        $('.oponentCodeButton').text('Your Code');
+      }
+      $('.flipper').toggleClass('flip');
     };
 
     //this resets the editor to the original prompt
@@ -156,3 +181,4 @@ angular.module('app')
     };
 
   });
+  

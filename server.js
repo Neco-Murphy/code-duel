@@ -266,8 +266,8 @@ io.on('connection', function(socket){
         db.saveScore(results);
         // first player is the winner
         console.log("FIRST USER WINS");
-        io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: true, opponentScore: currentScore});
-        io.sockets.in(currentUser).emit('isWinner', {isWinner: false, opponentScore: roomHighScore});  
+        io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: true, opponentScore: currentScore, oppoentCode: 'please send the code'});
+        io.sockets.in(currentUser).emit('isWinner', {isWinner: false, opponentScore: roomHighScore, opponentCode: 'please send the code'});  
       }
       
     }
