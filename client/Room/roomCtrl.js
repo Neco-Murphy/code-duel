@@ -1,9 +1,15 @@
 angular.module('app')
   .controller('roomCtrl', function($scope, $log, $timeout, socket) {
     $scope.sent = false;
-    var clock = $('.clock').FlipClock(0, {
+    var clock = $('.clock').FlipClock(600, {
       clockFace: 'MinuteCounter',
-      autoStart: false
+      autoStart: false,
+      countdown: true,
+      callbacks: {
+        stop: function(){
+          $scope.timesup = true;
+        }
+      }
     });
      //timer init variables
      $scope.clock = {
@@ -20,24 +26,24 @@ angular.module('app')
      $scope.defeat=false;
 
      //here are our variables for start theme and prompt
-     var theme = "twilight"; 
+     var theme = "twilight";
      var editor = ace.edit("editor");
      $scope.prompt = '//Your prompt will appear when your opponent joins the room \n //Ask a friend to join this room to duel';
-    
+
     //this adds the editor to the view with default settings
      editor.setHighlightGutterLine(true);
      editor.setTheme("ace/theme/"+ theme);
      editor.getSession().setMode("ace/mode/javascript");
      editor.setValue($scope.prompt);
- 
-   
+
+
      socket.on('joinedRoom', function(roominfo){
        console.log(roominfo.name + ' has been joined, BABIES');
        $scope.roomname = roominfo.name;
        $scope.playername = roominfo.player;
        $scope.playerId = roominfo.id;
      });
- 
+
      socket.on('displayPrompt', function(problem){
        console.log('received prompt: ' + JSON.stringify(problem));
        $scope.prompt = problem.prompt;
@@ -72,7 +78,7 @@ angular.module('app')
        //2($scope.prompt);
        clock.stop();
        $scope.stopTimer();
-      
+
      });
 
     socket.on('sendScore', function(codeScore){
@@ -102,16 +108,16 @@ angular.module('app')
         }
       }, 1000);
      });
-    
+
     //this is where we will need to test the code
     $scope.submit = function() {
-      
+
       var userCode = editor.getValue();
       console.log('CODE-DUEL: Sending code to be evaluated.');
 
-      socket.emit('sendCode', 
+      socket.emit('sendCode',
         {
-        code: userCode, 
+        code: userCode,
         problemName: $scope.problemName,
         timeTaken: $scope.clock.time,
         player: $scope.playername,
@@ -122,14 +128,14 @@ angular.module('app')
       $scope.stopTimer();
       $scope.sent = true;
     };
- 
+
     //this resets the editor to the original prompt
     $scope.reset = function() {
       console.log('reset');
       console.log($scope.prompt);
        editor.setValue($scope.prompt);
     };
-    
+
     $scope.startTimer = function() {
       $scope.clock.timer = $timeout(function(){
         $scope.clock.time++;
