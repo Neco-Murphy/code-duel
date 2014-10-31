@@ -285,20 +285,14 @@ io.on('connection', function(socket){
       // look at the user obj to figure out where we are currently
       for(var i = 0; i < users.userRooms.length; i++){
         if(users.userRooms[i][0] === userId){
-          var currentUser = users.userRooms[i][0]
-          var currentRoom = users.userRooms[i][2];
           //if its the first submit or the new score is the higher than the last one, assign new score and code
           if(!users.userRooms[i][3] || score > users.userRooms[i][3]){
-            var currentScore = users.userRooms[i][3] = score;
-            var currentCode = users.userRooms[i][4] = code.code;
-          }else{
-            var currentScore = users.userRooms[i][3];
-            var currentCode = users.userRooms[i][4];
+            users.userRooms[i][3] = score;
+            users.userRooms[i][4] = code.code;
           }
-          break;
+          return users.userRooms[i][3];
         }
       }
-      return currentScore;
     };
 
     io.sockets.in(userId).emit('sendScore', compareScore());
