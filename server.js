@@ -239,6 +239,25 @@ io.on('connection', function(socket){
     }
   }
 
+  // ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~
+
+
+    var compareScore = function(userId, score, code){
+      // look at the user obj to figure out where we are currently
+      for(var i = 0; i < users.userRooms.length; i++){
+        if(users.userRooms[i][0] === userId){
+          //if its the first submit or the new score is the higher than the last one, assign new score and code
+          if(!users.userRooms[i][3] || score > users.userRooms[i][3]){
+            users.userRooms[i][3] = score;
+            users.userRooms[i][4] = code.code;
+          }
+          return users.userRooms[i][3];
+        }
+      }
+    };
+
+  // ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~
+
   socket.on('sendCode', function(code){
 
     var errorsInCode = false;
@@ -281,21 +300,13 @@ io.on('connection', function(socket){
       }
     }
 
-    var compareScore = function(){
-      // look at the user obj to figure out where we are currently
-      for(var i = 0; i < users.userRooms.length; i++){
-        if(users.userRooms[i][0] === userId){
-          //if its the first submit or the new score is the higher than the last one, assign new score and code
-          if(!users.userRooms[i][3] || score > users.userRooms[i][3]){
-            users.userRooms[i][3] = score;
-            users.userRooms[i][4] = code.code;
-          }
-          return users.userRooms[i][3];
-        }
-      }
-    };
 
-    io.sockets.in(userId).emit('sendScore', compareScore());
+    //check if the user got a perfect score
+    if(percentageRight === 100){
+      io.sockets.in(userId).emit('sendScore', score);
+    }else{
+      io.sockets.in(userId).emit('sendScore', compareScore(userId, score, code));
+    }
 
     gameOver(code, score, test, userId);
 
