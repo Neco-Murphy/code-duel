@@ -155,6 +155,14 @@ io.on('connection', function(socket){
 
   // ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~
 
+  socket.on('timeUp', function(){
+    //compare 2 codes and send the result to the user (will recieve twice)
+    //call gameOver function here
+  });
+
+  // ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~
+
+
   socket.on('sendCode', function(code){
    
     var errorsInCode = false;
