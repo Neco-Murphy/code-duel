@@ -60,7 +60,8 @@ io.on('connection', function(socket){
       if (users.socketList.indexOf(userId) === -1){
         users.socketList.push(userId);
         users.userNames.push(user);
-        users.userRooms.push([userId, user, room, 0]);
+        //store an array of userID, user, room, score and code
+        users.userRooms.push([userId, user, room, 0, 'not submitted yet']);
         socket.join(room);
         //send room and user data to room
         var roominfo = {
@@ -168,7 +169,8 @@ io.on('connection', function(socket){
       if(users.userRooms[i][0] === userId){
         var currentUser = users.userRooms[i][0]
         var currentRoom = users.userRooms[i][2];
-        var currentScore = users.userRooms[i][3] = score;
+        var currentScore = users.userRooms[i][3];
+        var currentCode = users.userRooms[i][4];
         break;
       }
     }
@@ -279,7 +281,27 @@ io.on('connection', function(socket){
       }
     }
 
-    io.sockets.in(userId).emit('sendScore', score);
+    var compareScore = function(){
+      // look at the user obj to figure out where we are currently
+      for(var i = 0; i < users.userRooms.length; i++){
+        if(users.userRooms[i][0] === userId){
+          var currentUser = users.userRooms[i][0]
+          var currentRoom = users.userRooms[i][2];
+          //if its the first submit or the new score is the higher than the last one, assign new score and code
+          if(!users.userRooms[i][3] || score > users.userRooms[i][3]){
+            var currentScore = users.userRooms[i][3] = score;
+            var currentCode = users.userRooms[i][4] = code.code;
+          }else{
+            var currentScore = users.userRooms[i][3];
+            var currentCode = users.userRooms[i][4];
+          }
+          break;
+        }
+      }
+      return currentScore;
+    };
+
+    io.sockets.in(userId).emit('sendScore', compareScore());
 
     gameOver(code, score, test, userId);
 
