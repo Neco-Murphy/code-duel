@@ -108,6 +108,8 @@ angular.module('app')
       console.log("is Winner??", JSON.stringify(isWinner.isWinner));
       editorOpp.setValue(isWinner.opponentCode);
       $scope.Gameover = true;
+      $scope.finishBeforeOpponent = true;
+      $scope.stopTimer();
       $(".oponentCodeButton").prop('disabled', false);
       setTimeout(function(){
         if(isWinner.isWinner){
@@ -148,8 +150,8 @@ angular.module('app')
         id: $scope.playerId,
         players: $scope.allPlayers
       });
-      $scope.stopTimer();
-      $scope.sent = true;
+      // $scope.stopTimer();
+      // $scope.sent = true;
     };
 
     $scope.flip = function(){
