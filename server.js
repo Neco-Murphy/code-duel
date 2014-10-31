@@ -15,7 +15,7 @@ app.use(express.static(__dirname + '/client'));
 // Log server errors
 process.on('uncaughtException', function (err) {
     console.log(err);
-}); 
+});
 
 // globals
 var users = {
@@ -34,7 +34,7 @@ io.on('connection', function(socket){
   users.userCount++;
   console.log("");
   console.log("Socket", userId, "connected");
-  
+
   //grab all the highscores from the db and send them to login view
   db.getAllScores(function(err, scores){
     socket.emit('getHighScores', scores);
@@ -75,8 +75,8 @@ io.on('connection', function(socket){
         }, 1000);
       }
     };
-     
-    
+
+
     //   //check if user exist
     // db.checkIfUserExists(user, function(exists){
     //   if(exists){
@@ -88,17 +88,17 @@ io.on('connection', function(socket){
 
     //   }
 
-    // });  
+    // });
 
 
-    // when room has a total of 2 people, 
+    // when room has a total of 2 people,
      //prompt to that specific room
     var providePrompt = function(specificRoom){
 
       // this logic just grabs a random prompt
       var prompts = fs.readdirSync('./problems');
       // the directories in the 'problems' directory must be names after
-      // their corresponding functions and there cannot be anything in 
+      // their corresponding functions and there cannot be anything in
       // 'problems' that isn't a problem directory
       var problemName = prompts[Math.floor(Math.random() * prompts.length)];
       // reads the prompt from the appropriate directory and
@@ -120,7 +120,7 @@ io.on('connection', function(socket){
     if(!roomLen){
       addUser();
 
-    // second user to a single room  
+    // second user to a single room
     } else if (Object.keys(roomLen).length === 1 || Object.keys(roomLen).length === 3 && users.socketList.indexOf(userId) === -1){
        // "highScore" is used later to evaluate whether both users in a room have submitted code
       io.sockets.adapter.rooms[room]['highScore'] = undefined;
@@ -143,7 +143,7 @@ io.on('connection', function(socket){
     if(!roomLen){
       isFull = false;
     } else {
-      // this needs to check for 4 items because 
+      // this needs to check for 4 items because
       // we're adding two extra properties per user the roomLen array
       isFull = Object.keys(roomLen).length > 3 ? true : false;
     }
@@ -162,51 +162,7 @@ io.on('connection', function(socket){
 
   // ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~  ***  ~~~~~~~~~~~~~
 
-
-  socket.on('sendCode', function(code){
-   
-    var errorsInCode = false;
-    
-    try {
-      // get the function evaluated
-      eval(code.code); 
-    } catch (e) {
-      //if there is an error log..  
-      console.log(e);   
-      //and score is set to zero
-      errorsInCode = true;
-      var score = 0;
-    }
-    
-    
-    // grab the tests
-    var test = require('./problems/' + code.problemName + '/test.js');
-
-    if(!errorsInCode){
-      try {
-
-      var percentageRight = test.testFunction(eval(code.problemName));
-      // Get the time it took to write the function
-      var timeTaken = code.timeTaken;
-      // Compute the score
-    
-      // The algorithm is mostly based on the tests with time taken
-      // used to break ties between people who passed the same tests
-      console.log('rwf', percentageRight);
-      console.log('rwf', timeTaken);
-      var score = Math.floor((percentageRight * 10) + (100/timeTaken));
-      console.log("Final score is: " + score);
-       
-      } catch (e) {
-        //log message if error when tests are run
-        console.log(e);
-        //set score to zero
-        var score = 0;  
-      }
-    }
-
-    io.sockets.in(userId).emit('sendScore', score);
-    
+  gameOver = function(code, score, test, userId) {
     // look at the user obj to figure out where we are currently
     for(var i = 0; i < users.userRooms.length; i++){
       if(users.userRooms[i][0] === userId){
@@ -216,7 +172,7 @@ io.on('connection', function(socket){
         break;
       }
     }
-    
+
     //find opponent by looking at users object with all peopl in room
     var opponent;
     var findOpponent = function() {
@@ -226,10 +182,10 @@ io.on('connection', function(socket){
         }
       }
     }();
-    
+
 
     var date = new Date();
-    date = (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear(); 
+    date = (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
       console.log(date);
     // if first run, this should be set to zero
     if(io.sockets.adapter.rooms[currentRoom]['highScore'] === undefined){
@@ -241,7 +197,7 @@ io.on('connection', function(socket){
     } else {
       var roomHighScore = io.sockets.adapter.rooms[currentRoom]['highScore'];
       if(roomHighScore < currentScore){
-      
+
         //compile results to store in db
         var results = {
           winner: code.player,
@@ -252,14 +208,14 @@ io.on('connection', function(socket){
           roomname: code.roomname,
           time: date
         }
-        
+
         db.saveScore(results);
         // second player is the winner
         console.log("SECOND USER WINS");
         io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: false, opponentScore: currentScore});
-        io.sockets.in(currentUser).emit('isWinner', {isWinner: true, opponentScore: roomHighScore});  
+        io.sockets.in(currentUser).emit('isWinner', {isWinner: true, opponentScore: roomHighScore});
       } else {
-        
+
         //compile results to store in db
         var results = {
           winner: opponent,
@@ -275,10 +231,57 @@ io.on('connection', function(socket){
         // first player is the winner
         console.log("FIRST USER WINS");
         io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: true, opponentScore: currentScore, opponentCode: '//please send the code'});
-        io.sockets.in(currentUser).emit('isWinner', {isWinner: false, opponentScore: roomHighScore, opponentCode: '//please send the code'});  
+        io.sockets.in(currentUser).emit('isWinner', {isWinner: false, opponentScore: roomHighScore, opponentCode: '//please send the code'});
       }
-      
+
     }
+  }
+
+  socket.on('sendCode', function(code){
+
+    var errorsInCode = false;
+
+    try {
+      // get the function evaluated
+      eval(code.code);
+    } catch (e) {
+      //if there is an error log..
+      console.log(e);
+      //and score is set to zero
+      errorsInCode = true;
+      var score = 0;
+    }
+
+
+    // grab the tests
+    var test = require('./problems/' + code.problemName + '/test.js');
+
+    if(!errorsInCode){
+      try {
+
+      var percentageRight = test.testFunction(eval(code.problemName));
+      // Get the time it took to write the function
+      var timeTaken = code.timeTaken;
+      // Compute the score
+
+      // The algorithm is mostly based on the tests with time taken
+      // used to break ties between people who passed the same tests
+      console.log('rwf', percentageRight);
+      console.log('rwf', timeTaken);
+      var score = Math.floor((percentageRight * 10) + (100/timeTaken));
+      console.log("Final score is: " + score);
+
+      } catch (e) {
+        //log message if error when tests are run
+        console.log(e);
+        //set score to zero
+        var score = 0;
+      }
+    }
+
+    io.sockets.in(userId).emit('sendScore', score);
+
+    gameOver(code, score, test, userId);
 
   });
 
