@@ -60,7 +60,8 @@ io.on('connection', function(socket){
       if (users.socketList.indexOf(userId) === -1){
         users.socketList.push(userId);
         users.userNames.push(user);
-        users.userRooms.push([userId, user, room, 0]);
+        //store an array of userID, user, room, score and code
+        users.userRooms.push([userId, user, room, 0, '']);
         socket.join(room);
         //send room and user data to room
         var roominfo = {
@@ -181,6 +182,7 @@ io.on('connection', function(socket){
     
     // grab the tests
     var test = require('./problems/' + code.problemName + '/test.js');
+    console.log('server line 185')
 
     if(!errorsInCode){
       try {
@@ -205,79 +207,92 @@ io.on('connection', function(socket){
       }
     }
 
-    io.sockets.in(userId).emit('sendScore', score);
     
     // look at the user obj to figure out where we are currently
     for(var i = 0; i < users.userRooms.length; i++){
       if(users.userRooms[i][0] === userId){
         var currentUser = users.userRooms[i][0]
         var currentRoom = users.userRooms[i][2];
-        var currentScore = users.userRooms[i][3] = score;
+        //if its the first submit or the new score is the higher than the last one, assign new score and code
+        if(!users.userRooms[i][3] || score > users.userRooms[i][3]){
+          var currentScore = users.userRooms[i][3] = score;
+          var currentCode = users.userRooms[i][4] = code.code;
+        }else{
+          var currentScore = users.userRooms[i][3];
+          var currentCode = users.userRooms[i][4];
+        }
         break;
       }
     }
+
     
-    //find opponent by looking at users object with all peopl in room
-    var opponent;
-    var findOpponent = function() {
-      for (var i =0; i < code.players.length; i++){
-        if(code.players[i]!==code.player){
-          opponent = code.players[i];
+    if(percentageRight === 100){
+      //find opponent by looking at users object with all peopl in room
+      var opponent;
+      var findOpponent = function() {
+        for (var i =0; i < code.players.length; i++){
+          if(code.players[i]!==code.player){
+            opponent = code.players[i];
+          }
         }
-      }
-    }();
-    
-
-    var date = new Date();
-    date = (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear(); 
-      console.log(date);
-    // if first run, this should be set to zero
-    if(io.sockets.adapter.rooms[currentRoom]['highScore'] === undefined){
-      // thus, set the room's highScore to the score of the first submitter
-      io.sockets.adapter.rooms[currentRoom]['highScore'] = currentScore;
-      // set the room's first submitter to "firstPlayer"
-      io.sockets.adapter.rooms[currentRoom]['firstPlayer'] = currentUser;
-
-    } else {
-      var roomHighScore = io.sockets.adapter.rooms[currentRoom]['highScore'];
-      if(roomHighScore < currentScore){
+      }();
       
-        //compile results to store in db
-        var results = {
-          winner: code.player,
-          loser: opponent,
-          score: currentScore,
-          loserScore: roomHighScore,
-          prompt: code.problemName,
-          roomname: code.roomname,
-          time: date
-        }
-        
-        db.saveScore(results);
-        // second player is the winner
-        console.log("SECOND USER WINS");
-        io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: false, opponentScore: currentScore});
-        io.sockets.in(currentUser).emit('isWinner', {isWinner: true, opponentScore: roomHighScore});  
+
+      var date = new Date();
+      date = (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear(); 
+        console.log(date);
+      // if first run, this should be set to zero
+      if(io.sockets.adapter.rooms[currentRoom]['highScore'] === undefined){
+        // thus, set the room's highScore to the score of the first submitter
+        io.sockets.adapter.rooms[currentRoom]['highScore'] = currentScore;
+        // set the room's first submitter to "firstPlayer"
+        io.sockets.adapter.rooms[currentRoom]['firstPlayer'] = currentUser;
+        //set the room's fitst player's code
+        io.sockets.adapter.rooms[currentRoom]['firstPlayerCode'] = currentCode;
       } else {
+        var roomHighScore = io.sockets.adapter.rooms[currentRoom]['highScore'];
+        if(roomHighScore < currentScore){
         
-        //compile results to store in db
-        var results = {
-          winner: opponent,
-          loser: code.player,
-          score: roomHighScore,
-          loserScore: currentScore,
-          prompt: code.problemName,
-          roomname: code.roomname,
-          time: date
-        }
+          //compile results to store in db
+          var results = {
+            winner: code.player,
+            loser: opponent,
+            score: currentScore,
+            loserScore: roomHighScore,
+            prompt: code.problemName,
+            roomname: code.roomname,
+            time: date
+          }
+          
+          db.saveScore(results);
+          // second player is the winner
+          console.log("SECOND USER WINS");
+          io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: false, opponentScore: currentScore});
+          io.sockets.in(currentUser).emit('isWinner', {isWinner: true, opponentScore: roomHighScore});  
+        } else {
+          
+          //compile results to store in db
+          var results = {
+            winner: opponent,
+            loser: code.player,
+            score: roomHighScore,
+            loserScore: currentScore,
+            prompt: code.problemName,
+            roomname: code.roomname,
+            time: date
+          }
 
-        db.saveScore(results);
-        // first player is the winner
-        console.log("FIRST USER WINS");
-        io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: true, opponentScore: currentScore, opponentCode: '//please send the code'});
-        io.sockets.in(currentUser).emit('isWinner', {isWinner: false, opponentScore: roomHighScore, opponentCode: '//please send the code'});  
+          db.saveScore(results);
+          // first player is the winner
+          console.log("FIRST USER WINS");
+          io.sockets.in(io.sockets.adapter.rooms[currentRoom]['firstPlayer']).emit('isWinner', {isWinner: true, opponentScore: currentScore, opponentCode: '//please send the code'});
+          io.sockets.in(currentUser).emit('isWinner', {isWinner: false, opponentScore: roomHighScore, opponentCode: '//please send the code'});  
+        }
+        
       }
       
+    }else{
+      io.sockets.in(userId).emit('sendScore', currentScore);
     }
 
   });

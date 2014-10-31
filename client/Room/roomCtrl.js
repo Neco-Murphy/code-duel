@@ -148,8 +148,8 @@ angular.module('app')
         id: $scope.playerId,
         players: $scope.allPlayers
       });
-      $scope.stopTimer();
-      $scope.sent = true;
+      // $scope.stopTimer();
+      // $scope.sent = true;
     };
 
     $scope.flip = function(){
