@@ -117,6 +117,8 @@ angular.module('app')
       $scope.finishBeforeOpponent = true;
       $scope.stopTimer();
       $(".oponentCodeButton").prop('disabled', false);
+      $('.submitButton').prop('disabled', true);
+      $('.resetButton').prop('disabled', true);
       setTimeout(function(){
         if(isWinner.isWinner){
           $scope.opponentScore = isWinner.opponentScore;
