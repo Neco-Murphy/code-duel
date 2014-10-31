@@ -110,8 +110,8 @@
       </div>
 
       <div>
-        <button ng-click="reset()" class="btn btn-md btn-danger resetButton" ng-disabled="sent">Reset</button>
-        <button ng-click="submit()" class="btn btn-md btn-danger submitButton" ng-disabled="sent">Submit</button>
+        <button ng-click="reset()" class="btn btn-md btn-danger resetButton">Reset</button>
+        <button ng-click="submit()" class="btn btn-md btn-danger submitButton">Submit</button>
         <button ng-click="flip()" class="btn btn-md btn-danger oponentCodeButton">Oponent's Code</button>
       </div>
       <br />
@@ -119,7 +119,7 @@
         Your prompt will appear when your opponent joins the room. Ask a friend to join this room to duel!
       </div>
       <div class="well" ng-show="finishBeforeOpponent" ng-hide="!finishBeforeOpponent">
-        Your score is {{score}}.<br />Waiting on your opponent to finish...
+        Your score is {{score}}.<br />Your code did not pass all the tests.<br />Fix the code and submit it again.
       </div>
       <div class="well" ng-show="timesup" >
         Times up! You lose!

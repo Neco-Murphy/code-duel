@@ -19,6 +19,10 @@ angular.module('app')
         }
       }
     });
+     //disable buttons as default
+     $('.submitButton').prop('disabled', true);
+     $('.resetButton').prop('disabled', true);
+     $('.oponentCodeButton').prop('disabled', true);
      //timer init variables
      $scope.clock = {
        time: 0,
@@ -57,13 +61,14 @@ angular.module('app')
        $scope.playerId = roominfo.id;
      });
 
-     //disable opponent code button as default
-     $('.oponentCodeButton').prop('disabled', true);
+
 
      socket.on('displayPrompt', function(problem){
        console.log('received prompt: ' + JSON.stringify(problem));
        $scope.prompt = problem.prompt;
        $scope.problemName = problem.problemName;
+       $('.submitButton').prop('disabled', false);
+       $('.resetButton').prop('disabled', false);
        $scope.noOpponent=false;
        editor.setValue($scope.prompt);
        $scope.allPlayers = problem.opponents;
@@ -92,6 +97,7 @@ angular.module('app')
         editor.setValue($scope.prompt);
         $scope.noOpponent=true;
         $scope.stopTimer();
+
       }
      });
 
@@ -150,8 +156,6 @@ angular.module('app')
         id: $scope.playerId,
         players: $scope.allPlayers
       });
-      // $scope.stopTimer();
-      // $scope.sent = true;
     };
 
     $scope.flip = function(){
@@ -165,9 +169,7 @@ angular.module('app')
 
     //this resets the editor to the original prompt
     $scope.reset = function() {
-      console.log('reset');
-      console.log($scope.prompt);
-       editor.setValue($scope.prompt);
+      editor.setValue($scope.prompt);
     };
 
     $scope.startTimer = function() {
