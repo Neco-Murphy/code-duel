@@ -13,6 +13,8 @@ angular.module('app')
             //disable submit and reset button
             $('.submitButton').prop('disabled', true);
             $('.resetButton').prop('disabled', true);
+            //send timeUp signal to the server
+            socket.emit('timeUp');
           }
         }
       }
@@ -78,7 +80,6 @@ angular.module('app')
        if($scope.clock.notcalled){
          setTimeout(function(){
            $scope.startTimer();
-           clock.start();
          }, 1000);
          //only call timer 1x
          $scope.clock.notcalled = false;
@@ -147,7 +148,6 @@ angular.module('app')
         id: $scope.playerId,
         players: $scope.allPlayers
       });
-      clock.stop();
       $scope.stopTimer();
       $scope.sent = true;
     };
@@ -169,6 +169,7 @@ angular.module('app')
     };
 
     $scope.startTimer = function() {
+      clock.start();
       $scope.clock.timer = $timeout(function(){
         $scope.clock.time++;
         $scope.clock.sec++;
@@ -181,6 +182,7 @@ angular.module('app')
     };
 
     $scope.stopTimer = function() {
+      clock.stop();
       $timeout.cancel($scope.clock.timer);
       $scope.clock.timer = null;
       $scope.clock.time = 0;
