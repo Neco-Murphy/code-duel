@@ -5,8 +5,8 @@ Coderbyte meets Chatroulette.
 ## Team
 
   - __Product Owner__: Allen J Price
-  - __Scrum Master__: Sebastian Delgado
-  - __Development Team Members__: Kelly Hale, Morgan Plant
+  - __Scrum Master__: Sebastian Delgado (1st term), Satoko Lom (2nd term)
+  - __Development Team Members__: Kelly Hale, Morgan Plant, Steve Sharp, Gregory Nisbet, Johnny Liang
 
 ## Table of Contents
 
@@ -19,8 +19,7 @@ Coderbyte meets Chatroulette.
 1. [Contributing](#contributing)
 
 ## Usage
-
-Grab a friend and head to [codeduel.azurewebsites.com](http://codeduel.azurewebsites.com). Sign in, join a room, and do BATTLE.
+Grab a friend and head to [coralduel.azurewebsites.net](http://coralduel.azurewebsites.net/). Sign in, join a room, and do BATTLE.
 
 ## Requirements
 
@@ -40,10 +39,6 @@ From within the root directory:
 sudo npm install -g bower
 npm install
 ```
-
-### Roadmap
-
-View the project roadmap [here](https://github.com/code-duel/code-duel/issues)
 
 
 ## Contributing
